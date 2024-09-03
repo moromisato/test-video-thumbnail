@@ -1,39 +1,51 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-import { PlayerError, useVideoPlayer, VideoPlayerStatus, VideoView } from 'expo-video';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  PlayerError,
+  useVideoPlayer,
+  VideoPlayerStatus,
+  VideoView,
+} from "expo-video";
+import { useCallback, useEffect, useState } from "react";
 
 interface ExpoVideoProps {
-  uri: string
+  uri: string;
 }
-
 
 export function ExpoVideo({ uri }: ExpoVideoProps) {
   const player = useVideoPlayer(uri);
 
-  const [status, setStatus] = useState(player.status)
-  const [error, setError] = useState<string | null>(null)
-  
-  const onStatus = useCallback((newStatus: VideoPlayerStatus, oldStatus: VideoPlayerStatus, statusError: PlayerError) => {
-    setStatus(newStatus)
+  const [status, setStatus] = useState(player.status);
+  const [error, setError] = useState<string | null>(null);
 
-    if (statusError) {
-      setError(statusError.message)
-    } else {
-      setError(null)
-    }
-  }, [uri])
+  const onStatus = useCallback(
+    (
+      newStatus: VideoPlayerStatus,
+      oldStatus: VideoPlayerStatus,
+      statusError: PlayerError
+    ) => {
+      console.log(newStatus);
+      setStatus(newStatus);
+
+      if (statusError) {
+        setError(statusError.message);
+      } else {
+        setError(null);
+      }
+    },
+    [uri]
+  );
 
   useEffect(() => {
     const subscriptionVideoStatus = player.addListener(
-      'statusChange',
-      onStatus,
-    )
+      "statusChange",
+      onStatus
+    );
 
     return () => {
-      subscriptionVideoStatus.remove()
-    }
-  }, [setStatus, player])
+      subscriptionVideoStatus.remove();
+    };
+  }, [setStatus, player]);
 
   return (
     <>
@@ -43,12 +55,12 @@ export function ExpoVideo({ uri }: ExpoVideoProps) {
         allowsFullscreen
         allowsPictureInPicture
       />
-      {status === 'loading' && (
+      {status === "loading" && (
         <View style={styles.centeredContainer}>
           <ActivityIndicator color="white" />
         </View>
       )}
-      {status === 'error' && (
+      {status === "error" && (
         <View style={styles.centeredContainer}>
           <Text style={styles.error}>{error}</Text>
         </View>
@@ -59,19 +71,19 @@ export function ExpoVideo({ uri }: ExpoVideoProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%'
+    width: "100%",
+    height: "100%",
   },
   centeredContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
     padding: 16,
-    position: 'absolute',
+    position: "absolute",
   },
   error: {
-    color: 'red',
-    textAlign: 'center'
+    color: "red",
+    textAlign: "center",
   },
 });
